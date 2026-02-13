@@ -1,2 +1,2 @@
 # ztp-compressor
-[next](./ztp)
+[next](./ztp-compressor)
