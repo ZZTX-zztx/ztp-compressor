@@ -124,7 +124,7 @@ body {
   <div class="title">🧧 新年版 ZTP 加密器</div>
   <input class="pwd" id="zipPwd" placeholder="设置加密密码" type="password">
   <div class="area" id="zipArea">
-    <p>选择文件 / 文件夹</p>
+    <p id="zipText">选择文件 / 文件夹</p>
     <input type="file" id="zipFiles" multiple webkitdirectory directory>
   </div>
   <button class="btn" id="doZip">生成 .ztp 加密包</button>
@@ -136,7 +136,7 @@ body {
   <div class="title">📂 解密解压</div>
   <input class="pwd" id="unzipPwd" placeholder="输入解密密码" type="password">
   <div class="area" id="unzipArea">
-    <p>选择 .ztp 文件</p>
+    <p id="unzipText">选择 .ztp 文件</p>
     <input type="file" id="unzipFile" accept=".ztp">
   </div>
   <button class="btn" id="doUnzip">解密并解压</button>
@@ -161,6 +161,27 @@ function toggleDark() {
 loadTheme();
 document.getElementById("toggleTheme").onclick = toggleDark;
 
+// 选择文件后显示名称
+const zipFiles = document.getElementById("zipFiles");
+zipFiles.onchange = () => {
+  const text = document.getElementById("zipText");
+  if (zipFiles.files.length === 0) {
+    text.textContent = "选择文件 / 文件夹";
+  } else {
+    text.textContent = `已选择：${zipFiles.files.length} 个项目`;
+  }
+};
+
+const unzipFile = document.getElementById("unzipFile");
+unzipFile.onchange = () => {
+  const text = document.getElementById("unzipText");
+  if (!unzipFile.files[0]) {
+    text.textContent = "选择 .ztp 文件";
+  } else {
+    text.textContent = `已选择：${unzipFile.files[0].name}`;
+  }
+};
+
 function setBar(id, v) {
   document.getElementById(id).style.width = Math.min(100, v) + "%";
 }
@@ -184,9 +205,9 @@ function aesDecrypt(b64, pwd) {
   }
 }
 
-// 加密打包（固定输出 .ztp）
+// 加密打包
 document.getElementById("doZip").onclick = async () => {
-  const files = Array.from(document.getElementById("zipFiles").files);
+  const files = Array.from(zipFiles.files);
   const pwd = document.getElementById("zipPwd").value || DEFAULT_PWD;
   const log = document.getElementById("zipLog");
   if (!files.length) return log.textContent = "请选择文件或文件夹";
@@ -210,7 +231,6 @@ document.getElementById("doZip").onclick = async () => {
   out.set(head);
   out.set(enc, head.length);
 
-  // 这里强制保存为 .ztp
   saveAs(new Blob([out]), "加密文件.ztp");
   setBar("zipBar", 100);
   log.textContent = "✅ 加密完成（.ztp）";
@@ -218,7 +238,7 @@ document.getElementById("doZip").onclick = async () => {
 
 // 解密
 document.getElementById("doUnzip").onclick = async () => {
-  const file = document.getElementById("unzipFile").files[0];
+  const file = unzipFile.files[0];
   const pwd = document.getElementById("unzipPwd").value || DEFAULT_PWD;
   const log = document.getElementById("unzipLog");
   if (!file) return log.textContent = "请选择 .ztp 文件";
@@ -255,8 +275,8 @@ document.getElementById("doUnzip").onclick = async () => {
   log.textContent = "✅ 解密完成";
 };
 
-document.getElementById("zipArea").onclick = () => document.getElementById("zipFiles").click();
-document.getElementById("unzipArea").onclick = () => document.getElementById("unzipFile").click();
+document.getElementById("zipArea").onclick = () => zipFiles.click();
+document.getElementById("unzipArea").onclick = () => unzipFile.click();
 </script>
 </body>
 </html>
