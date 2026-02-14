@@ -3,210 +3,167 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZTP 解压器</title>
+<title>ZTP 解压器 B</title>
 <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
 <script src="https://unpkg.com/crypto-js@4.2.0/crypto-js.min.js"></script>
 <style>
-:root {
-  --bg: #fff0f0;
-  --card: #ffffff;
-  --text: #222;
-  --muted: #666;
-  --border: #ffcccc;
-  --main: #d92c2c;
-  --progress: #ffd6d6;
-}
-html.dark {
-  --bg: #1a1111;
-  --card: #2c1a1a;
-  --text: #f0f0f0;
-  --muted: #ccc;
-  --border: #552a2a;
-  --main: #b32424;
-  --progress: #442222;
-}
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: system-ui, sans-serif;
-}
-body {
-  background: var(--bg);
-  color: var(--text);
-  padding: 20px;
-  max-width: 500px;
-  margin: 0 auto;
-  transition: all 0.3s;
-}
-.card {
-  background: var(--card);
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-.title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--main);
-  margin-bottom: 12px;
-}
-.area {
-  border: 2px dashed var(--border);
-  border-radius: 12px;
-  padding: 28px 10px;
-  text-align: center;
-  color: var(--muted);
-  margin-bottom: 12px;
-  cursor: pointer;
-}
-.area input {
-  display: none;
-}
-.btn {
-  background: var(--main);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 12px;
-  width: 100%;
-  font-size: 15px;
-  font-weight: 600;
-  margin-top: 6px;
-  cursor: pointer;
-}
-.input-box {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: transparent;
-  color: var(--text);
-  margin-bottom: 10px;
-  outline: none;
-}
-.progress {
-  height: 6px;
-  background: var(--progress);
-  border-radius: 3px;
-  overflow: hidden;
-  margin: 10px 0;
-}
-.bar {
-  height: 100%;
-  background: var(--main);
-  width: 0;
-  transition: width 0.2s;
-}
-.status {
-  font-size: 14px;
-  color: var(--muted);
-  text-align: center;
-}
-.themeBtn {
-  background: var(--card);
-  color: var(--main);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 14px;
-  cursor: pointer;
-  margin-bottom: 12px;
-}
+:root {--bg:#fff0f0;--card:#fff;--text:#222;--muted:#666;--border:#ffcccc;--main:#d92c2c;--progress:#ffd6d6;}
+html.dark {--bg:#1a1111;--card:#2c1a1a;--text:#f0f0f0;--muted:#ccc;--border:#552a2a;--main:#b32424;--progress:#442222;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif;}
+body{background:var(--bg);color:var(--text);padding:20px;max-width:500px;margin:0 auto;}
+.card{background:var(--card);border-radius:16px;padding:20px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.title{font-size:18px;font-weight:700;color:var(--main);margin-bottom:12px;}
+.area{border:2px dashed var(--border);border-radius:12px;padding:28px 10px;text-align:center;color:var(--muted);margin-bottom:12px;cursor:pointer;}
+.area input{display:none;}
+.btn{background:var(--main);color:#fff;border:none;border-radius:10px;padding:12px;width:100%;font-size:15px;font-weight:600;margin-top:6px;cursor:pointer;}
+.input-box{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:transparent;color:var(--text);margin-bottom:10px;outline:none;display:none;}
+.progress{height:6px;background:var(--progress);border-radius:3px;overflow:hidden;margin:10px 0;}
+.bar{height:100%;background:var(--main);width:0;transition:width 0.2s;}
+.status{font-size:14px;color:var(--muted);text-align:center;}
+.themeBtn{background:var(--card);color:var(--main);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:14px;cursor:pointer;margin-bottom:12px;}
 </style>
 </head>
 <body>
 
 <button class="themeBtn" id="toggleTheme">切换暗色/亮色</button>
-
 <div class="card">
-  <div class="title">🔓 ZTP 解压器</div>
+  <div class="title">🔓 ZTP 解压器 B</div>
 
-  <input class="input-box" id="unpackPwd" placeholder="输入密码（如有）" type="password">
+  <input class="input-box" id="pwdInput" placeholder="请输入解密密码" type="password">
 
-  <div class="area" id="unpackArea">
+  <div class="area" id="dropArea">
     <p id="tipText">选择 .ztp 文件</p>
     <input type="file" id="fileInput" accept=".ztp">
   </div>
 
-  <button class="btn" id="doUnpack">开始解压</button>
+  <button class="btn" id="startBtn">开始解压</button>
   <div class="progress"><div class="bar" id="progressBar"></div></div>
   <p class="status" id="status"></p>
 </div>
 
 <script>
-const MAGIC = "ZTPv2-ZTP";
+const MAGIC = "ZTPv2-ZETA";
 const XOR_KEY = 0x9D;
 
-// 主题记忆
-function loadTheme() {
-  if (localStorage.getItem("dark") === "1")
-    document.documentElement.classList.add("dark");
+// 主题
+function loadTheme(){
+  if(localStorage.getItem("dark")==="1") document.documentElement.classList.add("dark");
 }
-function toggleDark() {
-  const d = document.documentElement.classList.toggle("dark");
-  localStorage.setItem("dark", d ? "1" : "0");
+function toggleDark(){
+  const d=document.documentElement.classList.toggle("dark");
+  localStorage.setItem("dark",d?"1":"0");
 }
 loadTheme();
-document.getElementById("toggleTheme").onclick = toggleDark;
+document.getElementById("toggleTheme").onclick=toggleDark;
 
-// 选择文件显示
-const inp = document.getElementById("fileInput");
-inp.onchange = () => {
-  document.getElementById("tipText").textContent =
-    inp.files[0] ? "已选择：" + inp.files[0].name : "选择 .ztp 文件";
-};
+const fileInput=document.getElementById("fileInput");
+const pwdInput=document.getElementById("pwdInput");
+const tipText=document.getElementById("tipText");
+const startBtn=document.getElementById("startBtn");
+const status=document.getElementById("status");
+const progressBar=document.getElementById("progressBar");
 
-// 解压逻辑
-document.getElementById("doUnpack").onclick = async () => {
-  const file = inp.files[0];
-  const pwd = document.getElementById("unpackPwd").value.trim();
-  const st = document.getElementById("status");
+let currentFile=null;
+let needPwd=false;
 
-  if (!file) {
-    st.textContent = "请选择 ztp 文件";
+// 选择文件后自动判断是否需要密码
+fileInput.onchange=async ()=>{
+  const file=fileInput.files[0];
+  if(!file) return;
+  currentFile=file;
+  tipText.textContent="已选择："+file.name;
+  status.textContent="正在检测文件类型...";
+  progressBar.style.width="30%";
+
+  const buf=await file.arrayBuffer();
+  const arr=new Uint8Array(buf);
+  const magic=new TextDecoder().decode(arr.slice(0,MAGIC.length));
+
+  if(magic!==MAGIC){
+    status.textContent="❌ 不是合法 ZTP 文件";
+    progressBar.style.width="0";
+    pwdInput.style.display="none";
+    needPwd=false;
     return;
   }
 
-  st.textContent = "正在校验...";
-  document.getElementById("progressBar").style.width = "30%";
+  // 判断是否加密
+  const content=arr.slice(MAGIC.length);
+  try{
+    const test=content.map(b=>b^XOR_KEY);
+    const str=new TextDecoder().decode(test);
+    if(str.startsWith("U2FsdGVkX1")){
+      needPwd=true;
+      pwdInput.style.display="block";
+      status.textContent="✅ 该文件需要密码";
+    }else{
+      needPwd=false;
+      pwdInput.style.display="none";
+      status.textContent="✅ 该文件无需密码";
+    }
+  }catch{
+    needPwd=false;
+    pwdInput.style.display="none";
+    status.textContent="✅ 该文件无需密码";
+  }
+  progressBar.style.width="100%";
+};
 
-  const buf = await file.arrayBuffer();
-  const arr = new Uint8Array(buf);
-  const magic = new TextDecoder().decode(arr.slice(0, MAGIC.length));
-
-  if (magic !== MAGIC) {
-    st.textContent = "不是合法的 ZTP 文件";
+// 开始解压
+startBtn.onclick=async ()=>{
+  if(!currentFile){
+    status.textContent="请先选择 ztp 文件";
+    return;
+  }
+  if(needPwd && !pwdInput.value.trim()){
+    status.textContent="请输入密码";
     return;
   }
 
-  document.getElementById("progressBar").style.width = "50%";
-  let content = arr.slice(MAGIC.length);
+  status.textContent="正在解压...";
+  progressBar.style.width="30%";
+  const pwd=pwdInput.value.trim();
 
-  try {
-    content = content.map(b => b ^ XOR_KEY);
-    const b64 = new TextDecoder().decode(content);
-    const words = CryptoJS.AES.decrypt(b64, pwd);
-    content = new Uint8Array(words.sigBytes);
-    for (let i=0;i<content.length;i++) content[i] = words.words[i>>>2] >>> (8*(3-(i&3)));
-  } catch {}
+  try{
+    const buf=await currentFile.arrayBuffer();
+    const arr=new Uint8Array(buf);
+    const magic=new TextDecoder().decode(arr.slice(0,MAGIC.length));
+    if(magic!==MAGIC) throw "格式错误";
 
-  const zip = new JSZip();
-  const z = await zip.loadAsync(content);
+    let data=arr.slice(MAGIC.length);
 
-  document.getElementById("progressBar").style.width = "80%";
+    if(needPwd){
+      data=data.map(b=>b^XOR_KEY);
+      const b64=new TextDecoder().decode(data);
+      const dec=CryptoJS.AES.decrypt(b64,pwd);
+      const len=dec.sigBytes;
+      const bin=new Uint8Array(len);
+      for(let i=0;i<len;i++){
+        bin[i]=(dec.words[i>>>2]>>>(8*(3-(i&3))))&0xff;
+      }
+      data=bin;
+    }
 
-  for (const n in z.files) {
-    if (!z.files[n].dir)
-      saveAs(await z.files[n].async("blob"), z.files[n].name);
+    const zip=new JSZip();
+    const z=await zip.loadAsync(data);
+    progressBar.style.width="70%";
+
+    for(const n in z.files){
+      if(!z.files[n].dir){
+        const blob=await z.files[n].async("blob");
+        saveAs(blob,z.files[n].name);
+      }
+    }
+    status.textContent="✅ 解压完成！";
+    progressBar.style.width="100%";
+  }catch(e){
+    status.textContent="❌ 解压失败：密码错误或文件损坏";
+    progressBar.style.width="0";
   }
-
-  document.getElementById("progressBar").style.width = "100%";
-  st.textContent = "✅ 解压完成！";
 };
 
-document.getElementById("unpackArea").onclick = () => inp.click();
+document.getElementById("dropArea").onclick=()=>fileInput.click();
 </script>
 </body>
 </html>
