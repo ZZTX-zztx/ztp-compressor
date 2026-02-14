@@ -3,220 +3,139 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZTP 压缩器</title>
-<link rel="icon" href="./ztpU.ico" type="image/x-icon">
+<title>ZTP 打包器</title>
 <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
 <script src="https://unpkg.com/crypto-js@4.2.0/crypto-js.min.js"></script>
 <style>
-:root {
-  --bg: #fff0f0;
-  --card: #ffffff;
-  --text: #222;
-  --muted: #666;
-  --border: #ffcccc;
-  --main: #d92c2c;
-  --progress: #ffd6d6;
-}
-html.dark {
-  --bg: #1a1111;
-  --card: #2c1a1a;
-  --text: #f0f0f0;
-  --muted: #ccc;
-  --border: #552a2a;
-  --main: #b32424;
-  --progress: #442222;
-}
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: system-ui, sans-serif;
-}
-body {
-  background: var(--bg);
-  color: var(--text);
-  padding: 20px;
-  max-width: 500px;
-  margin: 0 auto;
-  transition: all 0.3s;
-}
-.card {
-  background: var(--card);
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-.title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--main);
-  margin-bottom: 12px;
-}
-.area {
-  border: 2px dashed var(--border);
-  border-radius: 12px;
-  padding: 28px 10px;
-  text-align: center;
-  color: var(--muted);
-  margin-bottom: 12px;
-  cursor: pointer;
-}
-.area input {
-  display: none;
-}
-.btn {
-  background: var(--main);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 12px;
-  width: 100%;
-  font-size: 15px;
-  font-weight: 600;
-  margin-top: 6px;
-  cursor: pointer;
-}
-.input-box {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: transparent;
-  color: var(--text);
-  margin-bottom: 10px;
-  outline: none;
-}
-.progress {
-  height: 6px;
-  background: var(--progress);
-  border-radius: 3px;
-  overflow: hidden;
-  margin: 10px 0;
-}
-.bar {
-  height: 100%;
-  background: var(--main);
-  width: 0;
-  transition: width 0.2s;
-}
-.status {
-  font-size: 14px;
-  color: var(--muted);
-  text-align: center;
-}
-.row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-.themeBtn {
-  background: var(--card);
-  color: var(--main);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 14px;
-  cursor: pointer;
-  margin-bottom: 12px;
-}
+:root {--bg:#fff0f0;--card:#fff;--text:#222;--muted:#666;--border:#ffcccc;--main:#d92c2c;--progress:#ffd6d6;}
+html.dark {--bg:#1a1111;--card:#2c1a1a;--text:#f0f0f0;--muted:#ccc;--border:#552a2a;--main:#b32424;--progress:#442222;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif;}
+body{background:var(--bg);color:var(--text);padding:20px;max-width:500px;margin:0 auto;}
+.card{background:var(--card);border-radius:16px;padding:20px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.title{font-size:18px;font-weight:700;color:var(--main);margin-bottom:12px;}
+.area{border:2px dashed var(--border);border-radius:12px;padding:28px 10px;text-align:center;color:var(--muted);margin-bottom:12px;cursor:pointer;}
+.area input{display:none;}
+.btn{background:var(--main);color:#fff;border:none;border-radius:10px;padding:12px;width:100%;font-size:15px;font-weight:600;margin-top:6px;cursor:pointer;}
+.input-box{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:transparent;color:var(--text);margin-bottom:10px;outline:none;}
+/* 密码框默认隐藏 */
+#zipPwd {display: none;}
+.progress{height:6px;background:var(--progress);border-radius:3px;overflow:hidden;margin:10px 0;}
+.bar{height:100%;background:var(--main);width:0;transition:width 0.2s;}
+.status{font-size:14px;color:var(--muted);text-align:center;}
+.row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.themeBtn{background:var(--card);color:var(--main);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:14px;cursor:pointer;margin-bottom:12px;}
 </style>
 </head>
 <body>
 
 <button class="themeBtn" id="toggleTheme">切换暗色/亮色</button>
-
 <div class="card">
-  <div class="title">📦 ZTP 打包器</div>
-
+  <div class="title">📦 ZTP 打包器 A</div>
   <div class="row">
     <input type="checkbox" id="usePassword">
-    <label>使用密码加密</label>
+    <label for="usePassword">使用密码加密</label>
   </div>
-
-  <input class="input-box" id="zipPwd" placeholder="设置密码" type="password">
+  <!-- 密码输入框默认隐藏 -->
+  <input class="input-box" id="zipPwd" placeholder="设置加密密码" type="password">
   <input class="input-box" id="fileName" placeholder="自定义文件名（可选）">
-
   <div class="area" id="zipArea">
     <p id="tipText">选择文件或文件夹</p>
     <input type="file" id="fileInput" multiple webkitdirectory directory>
   </div>
-
   <button class="btn" id="doPack">生成 ZTP 文件</button>
   <div class="progress"><div class="bar" id="progressBar"></div></div>
   <p class="status" id="status"></p>
 </div>
 
 <script>
-const MAGIC = "ZTPv2-ZTP";
+const MAGIC = "ZTPv2-ZETA";
 const XOR_KEY = 0x9D;
 
 // 主题记忆
-function loadTheme() {
-  if (localStorage.getItem("dark") === "1")
-    document.documentElement.classList.add("dark");
+function loadTheme(){
+  if(localStorage.getItem("dark")==="1") document.documentElement.classList.add("dark");
 }
-function toggleDark() {
-  const d = document.documentElement.classList.toggle("dark");
-  localStorage.setItem("dark", d ? "1" : "0");
+function toggleDark(){
+  const d=document.documentElement.classList.toggle("dark");
+  localStorage.setItem("dark",d?"1":"0");
 }
 loadTheme();
-document.getElementById("toggleTheme").onclick = toggleDark;
+document.getElementById("toggleTheme").onclick=toggleDark;
 
-// 选择文件显示
-const inp = document.getElementById("fileInput");
-inp.onchange = () => {
-  document.getElementById("tipText").textContent =
-    inp.files.length ? `已选 ${inp.files.length} 项` : "选择文件或文件夹";
+// 核心：勾选/取消勾选时显示/隐藏密码框
+const usePasswordCheckbox = document.getElementById("usePassword");
+const zipPwdInput = document.getElementById("zipPwd");
+usePasswordCheckbox.addEventListener("change", function() {
+  if (this.checked) {
+    zipPwdInput.style.display = "block"; // 勾选后显示密码框
+  } else {
+    zipPwdInput.style.display = "none";  // 取消勾选隐藏密码框
+  }
+});
+
+// 选择文件显示数量
+const fileInput = document.getElementById("fileInput");
+fileInput.onchange = () => {
+  document.getElementById("tipText").textContent = fileInput.files.length ? `已选：${fileInput.files.length}项` : "选择文件或文件夹";
 };
 
 // 打包逻辑
 document.getElementById("doPack").onclick = async () => {
-  const files = Array.from(inp.files);
-  const usePwd = document.getElementById("usePassword").checked;
-  const pwd = document.getElementById("zipPwd").value.trim();
-  const name = document.getElementById("fileName").value.trim();
-  const st = document.getElementById("status");
+  const files = Array.from(fileInput.files);
+  const usePwd = usePasswordCheckbox.checked;
+  const pwd = zipPwdInput.value.trim();
+  const fileName = document.getElementById("fileName").value.trim();
+  const statusText = document.getElementById("status");
+  const progressBar = document.getElementById("progressBar");
 
+  // 校验
   if (files.length === 0) {
-    st.textContent = "请先选择文件";
+    statusText.textContent = "❌ 请先选择文件/文件夹";
     return;
   }
   if (usePwd && pwd === "") {
-    st.textContent = "请输入密码";
+    statusText.textContent = "❌ 请输入加密密码";
     return;
   }
 
-  st.textContent = "正在打包...";
-  document.getElementById("progressBar").style.width = "30%";
+  // 开始打包
+  statusText.textContent = "📦 正在打包...";
+  progressBar.style.width = "30%";
 
-  const zip = new JSZip();
-  files.forEach(f => zip.file(f.webkitRelativePath || f.name, f));
-  const bin = await zip.generateAsync({ type: "uint8array" });
+  try {
+    const zip = new JSZip();
+    files.forEach(f => zip.file(f.webkitRelativePath || f.name, f));
+    const bin = await zip.generateAsync({ type: "uint8array" });
+    progressBar.style.width = "60%";
 
-  document.getElementById("progressBar").style.width = "60%";
+    let finalData = bin;
+    // 加密逻辑
+    if (usePwd) {
+      const aesStr = CryptoJS.AES.encrypt(CryptoJS.lib.WordArray.create(bin), pwd).toString();
+      finalData = new TextEncoder().encode(aesStr).map(b => b ^ XOR_KEY);
+    }
 
-  let out = bin;
-  if (usePwd) {
-    const aes = CryptoJS.AES.encrypt(CryptoJS.lib.WordArray.create(bin), pwd).toString();
-    out = new TextEncoder().encode(aes);
-    out = out.map(b => b ^ XOR_KEY);
+    // 拼接ZTP头部
+    const head = new TextEncoder().encode(MAGIC);
+    const outBuf = new Uint8Array(head.length + finalData.length);
+    outBuf.set(head);
+    outBuf.set(finalData, head.length);
+
+    // 处理文件名
+    const saveName = (fileName || "archive") + ".ztp";
+    saveAs(new Blob([outBuf]), saveName);
+
+    progressBar.style.width = "100%";
+    statusText.textContent = `✅ 生成完成：${saveName}`;
+  } catch (e) {
+    progressBar.style.width = "0";
+    statusText.textContent = "❌ 打包失败：" + e.message;
   }
-
-  const head = new TextEncoder().encode(MAGIC);
-  const buf = new Uint8Array(head.length + out.length);
-  buf.set(head);
-  buf.set(out, head.length);
-
-  const saveName = (name || "archive") + ".ztp";
-  saveAs(new Blob([buf]), saveName);
-
-  document.getElementById("progressBar").style.width = "100%";
-  st.textContent = "✅ 生成完成：" + saveName;
 };
 
-document.getElementById("zipArea").onclick = () => inp.click();
+// 点击上传区域触发文件选择
+document.getElementById("zipArea").onclick = () => fileInput.click();
 </script>
 </body>
-  </html>
+</html>
